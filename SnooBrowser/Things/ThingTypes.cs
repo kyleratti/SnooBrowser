@@ -55,10 +55,15 @@ public class LinkThing : ThingType
 	/// <inheritdoc />
 	public override string ShortId { get; }
 
-	public LinkThing(string shortId)
+	private LinkThing(string shortId)
 	{
 		ShortId = shortId;
 	}
+
+	public static LinkThing CreateFromShortId(string shortId) =>
+		new(shortId);
+	public static LinkThing CreateFromFullId(string fullId) =>
+		new(fullId[(fullId.IndexOf('_') + 1)..]);
 }
 
 public class MessageThing : ThingType
@@ -83,10 +88,15 @@ public class SubredditThing : ThingType
 	/// <inheritdoc />
 	public override string ShortId { get; }
 
-	public SubredditThing(string shortId)
+	private SubredditThing(string shortId)
 	{
 		ShortId = shortId;
 	}
+
+	public static SubredditThing CreateFromShortId(string shortId) =>
+		new(shortId);
+	public static SubredditThing CreateFromFullId(string fullId) =>
+		new(fullId[(fullId.IndexOf('_') + 1)..]);
 }
 
 public class AwardThing : ThingType

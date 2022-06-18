@@ -29,8 +29,16 @@ public class SnooBrowserHttpClient
 		_accessTokenProvider = accessTokenProvider;
 	}
 
-	public async Task<T?> Send<T>(HttpMethod httpMethod, Uri url, MessageBodyType bodyType, object? body = null) =>
-		await SendImpl<T>(triesRemaining: 2,
+	public async Task<T?> SendAndParseAsJson<T>(HttpMethod httpMethod, Uri url, MessageBodyType bodyType, object? body = null) =>
+		await SendAndParseAsJsonImpl<T>(triesRemaining: 2,
+			httpMethod,
+			url,
+			new BearerTokenAuthenticationType(_accessTokenProvider.AccessToken.Map(x => x.Token).OrValue("")),
+			bodyType,
+			body);
+	
+	public async Task<HttpResponseType> SendAndTryParseAsJson<T>(HttpMethod httpMethod, Uri url, MessageBodyType bodyType, object? body = null) =>
+		await SendAndTryParseAsJson<T>(triesRemaining: 2,
 			httpMethod,
 			url,
 			new BearerTokenAuthenticationType(_accessTokenProvider.AccessToken.Map(x => x.Token).OrValue("")),
@@ -38,22 +46,46 @@ public class SnooBrowserHttpClient
 			body);
 
 	public async Task<T?> Post<T>(Uri url, MessageBodyType? bodyType = MessageBodyType.None, object? body = null) =>
-		await Send<T>(HttpMethod.Post, url, bodyType ?? MessageBodyType.None, body);
+		await SendAndParseAsJson<T>(HttpMethod.Post, url, bodyType ?? MessageBodyType.None, body);
 
 	public async Task Post(Uri url, MessageBodyType? bodyType = MessageBodyType.None, object? body = null) =>
-		await Send<object>(HttpMethod.Post, url, bodyType ?? MessageBodyType.None, body);
+		await SendAndParseAsJson<object>(HttpMethod.Post, url, bodyType ?? MessageBodyType.None, body);
 
 	public async Task<T?> Get<T>(Uri url) =>
-		await Send<T>(HttpMethod.Get, url, MessageBodyType.None);
+		await SendAndParseAsJson<T>(HttpMethod.Get, url, MessageBodyType.None);
 
-	private async Task<T?> SendImpl<T>(int triesRemaining, HttpMethod httpMethod, Uri url,
+	public async Task<HttpResponseType> TryGet<T>(Uri url) =>
+		await SendAndTryParseAsJson<T>(HttpMethod.Get, url, MessageBodyType.None);
+
+	private async Task<T?> SendAndParseAsJsonImpl<T>(int triesRemaining, HttpMethod httpMethod, Uri url,
 		HttpAuthenticationType authType, MessageBodyType bodyType, object? body = null)
 	{
-		async Task<T?> RefreshAccessTokenAndRetry(int remaining)
+		var resp = await SendImpl(triesRemaining, httpMethod, url, authType, bodyType, body);
+		var content = await AssertIsSuccessfulResponse(resp);
+
+		return JsonConvert.DeserializeObject<T>(content);
+	}
+
+	private async Task<HttpResponseType> SendAndTryParseAsJson<T>(int triesRemaining, HttpMethod httpMethod, Uri url,
+		HttpAuthenticationType authType, MessageBodyType bodyType, object? body = null)
+	{
+		var resp = await SendImpl(triesRemaining, httpMethod, url, authType, bodyType, body);
+		var content = await resp.Content.ReadAsStringAsync();
+
+		if (resp.StatusCode is HttpStatusCode.NotFound)
+			return new ErrorResponseType(resp, content);
+
+		return new SuccessResponseType<T?>(resp, JsonConvert.DeserializeObject<T>(content));
+	}
+
+	private async Task<HttpResponseMessage> SendImpl(int triesRemaining, HttpMethod httpMethod, Uri url,
+		HttpAuthenticationType authType, MessageBodyType bodyType, object? body = null)
+	{
+		async Task<HttpResponseMessage> RefreshAccessTokenAndRetry(int remaining)
 		{
 			var newAccessToken = await RefreshAccessToken();
 			var newAuthType = new BearerTokenAuthenticationType(newAccessToken.Token);
-			return await SendImpl<T>(remaining, httpMethod, url, newAuthType, bodyType, body);
+			return await SendImpl(remaining, httpMethod, url, newAuthType, bodyType, body);
 		}
 
 		while (triesRemaining > 0)
@@ -86,11 +118,8 @@ public class SnooBrowserHttpClient
 			{
 				var newAccessToken = await RefreshAccessToken();
 				var newAuthType = new BearerTokenAuthenticationType(newAccessToken.Token);
-				return await SendImpl<T>(triesRemaining, httpMethod, url, newAuthType, bodyType, body);
+				return await SendImpl(triesRemaining, httpMethod, url, newAuthType, bodyType, body);
 			}
-
-			var content = await resp.Content.ReadAsStringAsync();
-			return JsonConvert.DeserializeObject<T>(content);
 		}
 
 		throw new Exception();
@@ -119,7 +148,7 @@ public class SnooBrowserHttpClient
 		try
 		{
 			var reqStartedAt = DateTime.Now;
-			var resp = await SendImpl<GetAccessTokenResponse>(
+			var resp = await SendAndParseAsJsonImpl<GetAccessTokenResponse>(
 				triesRemaining: 1,
 				HttpMethod.Post,
 				new Uri("https://www.reddit.com/api/v1/access_token"),
@@ -153,6 +182,17 @@ public class SnooBrowserHttpClient
 			MessageBodyType.FormUrlEncoded => new FormUrlEncodedContent(JObject.FromObject(body).ToObject<Dictionary<string, string>>()!),
 			_ => throw new NotImplementedException($"{nameof(MessageBodyType)} not implemented: {bodyType:D}")
 		};
+	}
+
+	private static async Task<string> AssertIsSuccessfulResponse(HttpResponseMessage resp)
+	{
+		var content = await resp.Content.ReadAsStringAsync();
+
+		// FIXME: this sucks
+		if (!resp.IsSuccessStatusCode)
+			throw new ApplicationException($"Received Non-Success Status Code: {resp.StatusCode:G} ({resp.StatusCode:D}), body: {content}");
+
+		return content;
 	}
 }
 
