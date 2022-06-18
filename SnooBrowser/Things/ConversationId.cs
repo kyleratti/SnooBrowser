@@ -1,15 +1,3 @@
-﻿namespace SnooBrowser.Things
-{
-    public class ConversationId
-    {
-        private ConversationId(string id)
-        {
-            Id = id;
-        }
+﻿namespace SnooBrowser.Things;
 
-        public string Id { get; }
-
-        public static ConversationId Create(string id) =>
-            new(id);
-    }
-}
+public record ConversationId(string RawId);

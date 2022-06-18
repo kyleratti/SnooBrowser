@@ -37,6 +37,7 @@ namespace SnooBrowser.Things
     /// <summary>
     /// Fullname
     /// </summary>
+    [Obsolete("Use a Thing from SnooBrowser.Things.ThingTypes instead to get compile-time type checking.")]
     public class Fullname
     {
         private Fullname(FullnameType fnType, string id)

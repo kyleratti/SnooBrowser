@@ -1,5 +1,5 @@
 ﻿using System;
-using SnooBrowser.Structures;
+using SnooBrowser.Models;
 
 namespace SnooBrowser.Util
 {
