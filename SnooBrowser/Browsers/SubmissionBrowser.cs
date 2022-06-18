@@ -14,7 +14,7 @@ public class SubmissionBrowser
 		_snooBrowserHttpClient = snooBrowserHttpClient;
 	}
 
-	public async Task<GetSubmissionResponse> GetSubmission(string subredditName, LinkThing thing) =>
+	public async Task<GetSubmissionResponse> GetSubmission(LinkThing thing) =>
 		(await _snooBrowserHttpClient.Get<GetSubmissionResponse>(
-			UrlHelper.Build($"r/{subredditName}/comments/{thing.ShortId}.json")))!;
+			UrlHelper.Build($"{thing.ShortId}.json")))!;
 }
