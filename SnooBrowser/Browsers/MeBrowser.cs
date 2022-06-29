@@ -16,5 +16,5 @@ public class MeBrowser
 
 	public async Task<GetMeResponse> GetMe() =>
 		(await _snooBrowserHttpClient
-			.Get<GetMeResponse>(new Uri(SnooBrowserHttpClient.BaseRedditApiUrl, "api/v1/me")))!;
+			.Get<GetMeResponse>(new Uri(SnooBrowserHttpClient.BaseRedditOAuthApiUrl, "api/v1/me")))!;
 }

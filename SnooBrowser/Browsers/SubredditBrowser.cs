@@ -14,5 +14,5 @@ public class SubredditBrowser
 	}
 
 	public async Task<GetAboutSubredditResponse> GetAboutSubreddit(string subreddit) =>
-		(await _snooBrowserHttpClient.Get<GetAboutSubredditResponse>(UrlHelper.Build($"r/{subreddit}/about.json")))!;
+		(await _snooBrowserHttpClient.Get<GetAboutSubredditResponse>(UrlHelper.BuildOAuthUrl($"r/{subreddit}/about.json")))!;
 }

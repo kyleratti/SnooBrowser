@@ -21,13 +21,13 @@ public class SubredditModerationBrowser
 
 	public async Task<GetModLogResponse> GetModLog(string subreddit, int limit = 100) =>
 		(await _snooBrowserHttpClient.Get<GetModLogResponse>(
-			UrlHelper.Build($"r/{subreddit}/about/log.json",
+			UrlHelper.BuildOAuthUrl($"r/{subreddit}/about/log.json",
 				new Dictionary<string, string> { { "limit", limit.ToString(CultureInfo.InvariantCulture) } }))
 		)!;
 
 	public async Task<GetModQueueResponse> GetModQueue(string subreddit, int limit = 100) =>
 		(await _snooBrowserHttpClient.Get<GetModQueueResponse>(
-			UrlHelper.Build($"r/{subreddit}/about/modqueue.json",
+			UrlHelper.BuildOAuthUrl($"r/{subreddit}/about/modqueue.json",
 			new Dictionary<string, string> { { "limit", limit.ToString(CultureInfo.InvariantCulture) } }))
 		)!;
 
@@ -40,7 +40,7 @@ public class SubredditModerationBrowser
 			_ => throw new NotImplementedException($"Unhandled thing: {thing.RawItem?.GetType().FullName}")
 		};
 
-		await _snooBrowserHttpClient.Post(UrlHelper.Build("api/remove"), MessageBodyType.FormUrlEncoded, new
+		await _snooBrowserHttpClient.Post(UrlHelper.BuildOAuthUrl("api/remove"), MessageBodyType.FormUrlEncoded, new
 		{
 			id = fullId,
 			spam = isSpam
@@ -61,7 +61,7 @@ public class SubredditModerationBrowser
 			_ => throw new NotImplementedException($"Unhandled thing: {thing.RawItem?.GetType().FullName}")
 		};
 
-		await _snooBrowserHttpClient.Post(UrlHelper.Build("api/approve"), MessageBodyType.FormUrlEncoded, new
+		await _snooBrowserHttpClient.Post(UrlHelper.BuildOAuthUrl("api/approve"), MessageBodyType.FormUrlEncoded, new
 		{
 			id = fullId
 		});
@@ -78,7 +78,7 @@ public class SubredditModerationBrowser
 			_ => throw new NotImplementedException($"Unhandled thing: {thing.RawItem?.GetType().FullName}")
 		};
 
-		await _snooBrowserHttpClient.Post(UrlHelper.Build("api/ignore_reports"), MessageBodyType.FormUrlEncoded, new
+		await _snooBrowserHttpClient.Post(UrlHelper.BuildOAuthUrl("api/ignore_reports"), MessageBodyType.FormUrlEncoded, new
 		{
 			id = fullId,
 		});
@@ -106,7 +106,7 @@ public class SubredditModerationBrowser
 		}
 
 		var resp =
-			await _snooBrowserHttpClient.Post<RedditUiResponse>(UrlHelper.Build($"r/{subreddit.DisplayName}/api/friend"),
+			await _snooBrowserHttpClient.Post<RedditUiResponse>(UrlHelper.BuildOAuthUrl($"r/{subreddit.DisplayName}/api/friend"),
 				MessageBodyType.FormUrlEncoded, new
 				{
 					action = "add",

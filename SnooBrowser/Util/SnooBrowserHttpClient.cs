@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -15,7 +15,8 @@ namespace SnooBrowser.Util;
 
 public class SnooBrowserHttpClient
 {
-	public static readonly Uri BaseRedditApiUrl = new("https://oauth.reddit.com/");
+	public static readonly Uri BaseRedditOAuthApiUrl = new("https://oauth.reddit.com/");
+	public static readonly Uri BaseRedditLegacyApiUrl = new("https://reddit.com/");
 	private readonly HttpClient _httpClient;
 	private readonly IAuthParameterProvider _authParameterProvider;
 	private readonly IAccessTokenProvider _accessTokenProvider;

@@ -7,15 +7,20 @@ namespace SnooBrowser.Util;
 
 public static class UrlHelper
 {
-	public static Uri Build(string relativeUrl, Maybe<Dictionary<string, string>> queryParams = default)
+	public static Uri BuildOAuthUrl(string relativeUrl, Maybe<Dictionary<string, string>> queryParams = default) =>
+		new(SnooBrowserHttpClient.BaseRedditOAuthApiUrl,
+			$"{relativeUrl}{queryParams.Map(BuildQueryString).OrValue(string.Empty)}");
+
+	public static Uri BuildLegacyUrl(string relativeUrl, Maybe<Dictionary<string, string>> queryParams = default) =>
+		new(SnooBrowserHttpClient.BaseRedditLegacyApiUrl,
+			$"{relativeUrl}{queryParams.Map(BuildQueryString).OrValue(string.Empty)}");
+
+		private static string BuildQueryString(Dictionary<string, string> queryParams)
 	{
 		var queryString = HttpUtility.ParseQueryString(string.Empty);
-		if (queryParams.Try(out var qParams))
-		{
-			foreach (var (key, value) in qParams)
-				queryString.Add(key, value);
-		}
+		foreach(var (key, value) in queryParams)
+			queryString.Add(key, value);
 
-		return new Uri(SnooBrowserHttpClient.BaseRedditApiUrl, $"{relativeUrl}{queryParams}");
+		return queryString.ToString()!;
 	}
 }

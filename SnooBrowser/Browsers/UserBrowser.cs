@@ -14,5 +14,5 @@ public class UserBrowser
 	}
 
 	public async Task<GetAboutUserResponse> GetAboutUser(string username) =>
-		(await _snooBrowserHttpClient.Get<GetAboutUserResponse>(UrlHelper.Build($"user/{username}/about")))!;
+		(await _snooBrowserHttpClient.Get<GetAboutUserResponse>(UrlHelper.BuildOAuthUrl($"user/{username}/about")))!;
 }

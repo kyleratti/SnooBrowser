@@ -35,16 +35,16 @@ public class NewModmailBrowser
 		if (after.HasValue)
 			queryParams.Add("after", after.Value);
 
-		return (await _snooBrowserHttpClient.Get<GetConversationsResponse>(UrlHelper.Build("api/mod/conversations",
+		return (await _snooBrowserHttpClient.Get<GetConversationsResponse>(UrlHelper.BuildOAuthUrl("api/mod/conversations",
 			queryParams)))!;
 	}
 
 	public async Task<bool> ArchiveConversation(ConversationId convoId)
 	{
-		await _snooBrowserHttpClient.Post(UrlHelper.Build($"api/mod/conversations/{convoId.RawId}/archive"));
+		await _snooBrowserHttpClient.Post(UrlHelper.BuildOAuthUrl($"api/mod/conversations/{convoId.RawId}/archive"));
 		return true; // FIXME:
 	}
 
 	public async Task<GetConversationResponse> GetConversation(ConversationId convoId) =>
-		(await _snooBrowserHttpClient.Get<GetConversationResponse>(UrlHelper.Build($"api/mod/conversations/{convoId.RawId}")))!;
+		(await _snooBrowserHttpClient.Get<GetConversationResponse>(UrlHelper.BuildOAuthUrl($"api/mod/conversations/{convoId.RawId}")))!;
 }
