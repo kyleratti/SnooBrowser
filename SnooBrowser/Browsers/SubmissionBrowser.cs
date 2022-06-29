@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FruityFoundation.Base.Structures;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SnooBrowser.Models;
 using SnooBrowser.Models.Submission;
 using SnooBrowser.Things;
@@ -18,19 +21,29 @@ public class SubmissionBrowser
 		_snooBrowserHttpClient = snooBrowserHttpClient;
 	}
 
-	public async Task<Maybe<GetSubmissionResponse>> GetSubmission(LinkThing thing)
+	public async Task<Maybe<(GetSubmissionResponse Submission, IReadOnlyList<SubmissionComment> Comments)>> GetSubmission(LinkThing thing)
 	{
-		var result = (await _snooBrowserHttpClient.TryGet<IReadOnlyList<Listing>>(
-			UrlHelper.Build($"{thing.ShortId}.json")))!;
+		var result = (await _snooBrowserHttpClient.TryGet<IReadOnlyList<Listing<JObject>>>(
+			UrlHelper.BuildLegacyUrl($"{thing.ShortId}.json")))!;
 
 		if (result is ErrorResponseType)
-			return Maybe<GetSubmissionResponse>.Empty();
+			return Maybe<(GetSubmissionResponse, IReadOnlyList<SubmissionComment>)>.Empty();
 
-		if (result is not SuccessResponseType<IReadOnlyList<Listing>> rawData)
+		if (result is not SuccessResponseType<IReadOnlyList<Listing<JObject>>> rawData)
 			throw new NotImplementedException($"Unknown result type: {result.GetType().FullName}");
 
-		var resp = rawData.Value[0].Data.Children[0];
+		var submission = rawData.Value[0].Data.Children[0];
+		var deserializedSubmission = submission.ToObject<ListingKind<GetSubmissionResponse>>()?.Data;
 
-		return resp.ToObject<GetSubmissionResponse>()!;
+		if (deserializedSubmission?.Url is null)
+			throw new JsonSerializationException("Unable to deserialize response");
+
+		var comments = rawData.Value[1].Data.Children
+			.Select(x =>
+				x.ToObject<ListingKind<SubmissionComment>>()?.Data ??
+				throw new JsonSerializationException("Unable to deserialize comment"))
+			.ToArray();
+
+		return (deserializedSubmission, comments);
 	}
 }

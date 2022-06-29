@@ -1,27 +1,28 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace SnooBrowser.Models;
 
-internal record ListingData
+internal record ListingKind<T>([property:JsonProperty("data")] T Data);
+
+internal record ListingData<T>
 {
-	public JObject[] Children { get; }
+	public T[] Children { get; }
 
 	[JsonConstructor]
-	internal ListingData(JObject[] children)
+	internal ListingData(T[] children)
 	{
 		Children = children;
 	}
 }
 
-internal record Listing
+internal record Listing<T>
 {
 	
-	public ListingData Data { get; }
+	public ListingData<T> Data { get; }
 
 	[JsonConstructor]
 	internal Listing(
-		ListingData data
+		ListingData<T> data
 	)
 	{
 		Data = data;

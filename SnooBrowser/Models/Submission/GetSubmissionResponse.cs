@@ -4,13 +4,29 @@ using SnooBrowser.Things;
 
 namespace SnooBrowser.Models.Submission;
 
+public record SubmissionComment(
+	[property:JsonProperty("name")] CommentThing Fullname,
+	[property:JsonProperty("archived")] bool IsArchived,
+	[property:JsonProperty("author_fullname")] AccountThing AuthorFullname,
+	[property:JsonProperty("body")] string Body,
+	[property:JsonProperty("edited")] bool IsEdited,
+	[property:JsonProperty("stickied")] bool IsStickied,
+	[property:JsonProperty("distinguished")] DistinguishedCommentType? RawDistinguishType,
+	[property:JsonProperty("link_id")] LinkThing CommentLinkFullname
+)
+{
+	public Maybe<DistinguishedCommentType> DistinguishType =>
+		Maybe<DistinguishedCommentType>.Create(RawDistinguishType.GetValueOrDefault(), hasValue: RawDistinguishType is DistinguishedCommentType.None);
+
+}
+
 public record GetSubmissionResponse
 {
 	/// <summary>
 	/// The name of the subreddit.
 	/// </summary>
 	/// <example>"aww"</example>
-	public string SubredditName { get; }
+	public string Subreddit { get; }
 	private string? _selfText { get; }
 	/// <summary>
 	/// The self text of the post.
@@ -69,14 +85,14 @@ public record GetSubmissionResponse
 
 	[JsonConstructor]
 	public GetSubmissionResponse(
-		string subredditName, string? selfText, string title,
+		string subreddit, string? selfText, string title,
 		string name, bool is_self, bool archived,
 		bool locked, string subreddit_id, string id,
 		string? author, int num_comments, string permalink,
 		string url
 	)
 	{
-		SubredditName = subredditName;
+		Subreddit = subreddit;
 		_selfText = selfText;
 		Title = title;
 		_submissionFullname = name;
