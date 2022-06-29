@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -73,7 +73,7 @@ public class SnooBrowserHttpClient
 		var resp = await SendImpl(triesRemaining, httpMethod, url, authType, bodyType, body);
 		var content = await resp.Content.ReadAsStringAsync();
 
-		if (resp.StatusCode is HttpStatusCode.NotFound)
+		if (!resp.IsSuccessStatusCode)
 			return new ErrorResponseType(resp, content);
 
 		return new SuccessResponseType<T?>(resp, JsonConvert.DeserializeObject<T>(content));
@@ -121,17 +121,16 @@ public class SnooBrowserHttpClient
 				var newAuthType = new BearerTokenAuthenticationType(newAccessToken.Token);
 				return await SendImpl(triesRemaining, httpMethod, url, newAuthType, bodyType, body);
 			}
+
+			return resp;
 		}
 
-		throw new Exception();
+		throw new Exception("Retry count exceeded");
 	}
 
 	private static Task<bool> IsErrorFromExpiredAccessToken(HttpResponseMessage resp)
 	{
 		if (resp.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
-			return Task.FromResult(true);
-
-		if (string.IsNullOrEmpty(resp.RequestMessage?.Headers.Authorization?.Parameter))
 			return Task.FromResult(true);
 
 		return Task.FromResult(false);
