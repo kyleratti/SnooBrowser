@@ -1,0 +1,25 @@
+name: CI/CD
+
+on:
+  pull_request:
+   branches: [ main ]
+
+jobs:
+  build:
+   runs-on: ubuntu-latest
+
+   steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Set up .NET 6
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: "6.0.x"
+    - name: Build
+      run: dotnet build -c Release
+    - name: Test
+      run: dotnet test
+      env:
+        SnooBrowser__Test__RedditAppId: ${{ secrets.SNOOBROWSER__TEST__REDDITAPPID }}
+        SnooBrowser__Test__RedditAppSecret: ${{ secrets.SNOOBROWSER__TEST__REDDITAPPSECRET }}
+        SnooBrowser__Test__RedditRefreshToken: ${{ secrets.SNOOBROWSER__TEST__REDDITREFRESHTOKEN }}
