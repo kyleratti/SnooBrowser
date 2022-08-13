@@ -4,22 +4,6 @@ using SnooBrowser.Things;
 
 namespace SnooBrowser.Models.Submission;
 
-public record SubmissionComment(
-	[property:JsonProperty("name")] CommentThing Fullname,
-	[property:JsonProperty("archived")] bool IsArchived,
-	[property:JsonProperty("author_fullname")] AccountThing AuthorFullname,
-	[property:JsonProperty("body")] string Body,
-	[property:JsonProperty("edited")] bool IsEdited,
-	[property:JsonProperty("stickied")] bool IsStickied,
-	[property:JsonProperty("distinguished")] DistinguishedCommentType? RawDistinguishType,
-	[property:JsonProperty("link_id")] LinkThing CommentLinkFullname
-)
-{
-	public Maybe<DistinguishedCommentType> DistinguishType =>
-		Maybe<DistinguishedCommentType>.Create(RawDistinguishType.GetValueOrDefault(), hasValue: RawDistinguishType is DistinguishedCommentType.None);
-
-}
-
 public record GetSubmissionResponse
 {
 	/// <summary>

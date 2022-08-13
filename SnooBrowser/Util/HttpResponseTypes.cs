@@ -1,31 +1,35 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 
 namespace SnooBrowser.Util;
 
-public abstract class HttpResponseType
+public abstract record HttpResponseType
 {
-}
+	public TOutput Merge<TSuccess, TOutput>(Func<SuccessResponseType<TSuccess>, TOutput> onSuccess, Func<ErrorResponseType, TOutput> onError) =>
+		this switch
+		{
+			SuccessResponseType<TSuccess> x => onSuccess(x),
+			ErrorResponseType x => onError(x),
+			_ => throw new ArgumentOutOfRangeException(nameof(HttpResponseType), GetType().FullName, $"Unhandled {nameof(HttpResponseType)}")
+		};
 
-public class SuccessResponseType<T> : HttpResponseType
-{
-	public HttpResponseMessage Response { get; }
-	public T Value { get; }
-
-	public SuccessResponseType(HttpResponseMessage response, T value)
+	public void WhenError(Action<ErrorResponseType> func)
 	{
-		Response = response;
-		Value = value;
+		if (this is ErrorResponseType x)
+			func(x);
+	}
+
+	public void When<T>(Action<SuccessResponseType<T>> success, Action<ErrorResponseType> error)
+	{
+		if (this is SuccessResponseType<T> s)
+			success(s);
+		else if (this is ErrorResponseType e)
+			error(e);
+
+		throw new ArgumentOutOfRangeException(nameof(HttpResponseType), GetType().FullName, $"Unhandled {nameof(HttpResponseType)}");
 	}
 }
 
-public class ErrorResponseType : HttpResponseType
-{
-	public HttpResponseMessage Response { get; }
-	public string RawBody { get; }
+public record SuccessResponseType<T>(HttpResponseMessage Response, T Value) : HttpResponseType;
 
-	public ErrorResponseType(HttpResponseMessage response, string rawBody)
-	{
-		Response = response;
-		RawBody = rawBody;
-	}
-}
+public record ErrorResponseType(HttpResponseMessage Response, string RawBody) : HttpResponseType;

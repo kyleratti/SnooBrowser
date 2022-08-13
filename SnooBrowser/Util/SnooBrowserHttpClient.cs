@@ -58,6 +58,9 @@ public class SnooBrowserHttpClient
 	public async Task<HttpResponseType> TryGet<T>(Uri url) =>
 		await SendAndTryParseAsJson<T>(HttpMethod.Get, url, MessageBodyType.None);
 
+	public async Task<HttpResponseType> TryPost<T>(Uri url, MessageBodyType bodyType, object body) =>
+		await SendAndTryParseAsJson<T>(HttpMethod.Post, url, bodyType, body);
+
 	private async Task<T?> SendAndParseAsJsonImpl<T>(int triesRemaining, HttpMethod httpMethod, Uri url,
 		HttpAuthenticationType authType, MessageBodyType bodyType, object? body = null)
 	{
@@ -82,20 +85,20 @@ public class SnooBrowserHttpClient
 	private async Task<HttpResponseMessage> SendImpl(int triesRemaining, HttpMethod httpMethod, Uri url,
 		HttpAuthenticationType authType, MessageBodyType bodyType, object? body = null)
 	{
-		async Task<HttpResponseMessage> RefreshAccessTokenAndRetry(int remaining)
+		async Task<HttpResponseMessage> RefreshAccessTokenAndRetry()
 		{
 			var newAccessToken = await RefreshAccessToken();
 			var newAuthType = new BearerTokenAuthenticationType(newAccessToken.Token);
-			return await SendImpl(remaining, httpMethod, url, newAuthType, bodyType, body);
+			return await SendImpl(triesRemaining, httpMethod, url, newAuthType, bodyType, body);
 		}
 
 		while (triesRemaining > 0)
 		{
-			triesRemaining--;
-
 			// We know to run immediately if the access token is blank
 			if (authType is BearerTokenAuthenticationType bearerTokenAuthType && string.IsNullOrEmpty(bearerTokenAuthType.AccessToken))
-				return await RefreshAccessTokenAndRetry(triesRemaining);
+				return await RefreshAccessTokenAndRetry();
+
+			triesRemaining--;
 
 			using var req = new HttpRequestMessage
 			{
@@ -130,7 +133,7 @@ public class SnooBrowserHttpClient
 
 	private static Task<bool> IsErrorFromExpiredAccessToken(HttpResponseMessage resp)
 	{
-		if (resp.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+		if (resp.StatusCode is HttpStatusCode.Unauthorized)
 			return Task.FromResult(true);
 
 		return Task.FromResult(false);

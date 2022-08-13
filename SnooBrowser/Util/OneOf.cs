@@ -27,11 +27,24 @@ public class OneOf<T1, T2>
 		}
 	}
 
+	public T Map<T>(Func<T1, T> itemOneMap, Func<T2, T> itemTwoMap)
+	{
+		if (_itemOne.Try(out var itemOne))
+			return itemOneMap(itemOne);
+		else if (_itemTwo.Try(out var itemTwo))
+			return itemTwoMap(itemTwo);
+
+		throw new NotImplementedException("Map condition not handled");
+	}
+
 	private OneOf(Maybe<T1> one, Maybe<T2> two)
 	{
 		_itemOne = one;
 		_itemTwo = two;
 	}
+
+	public static OneOf<T1, T2> CreateOne(T1 item) => new(item, default);
+	public static OneOf<T1, T2> CreateTwo(T2 item) => new(default, item);
 
 	public static implicit operator OneOf<T1, T2>(T1 oneOf) => new(oneOf, default);
 	public static implicit operator OneOf<T1, T2>(T2 oneOf) => new(default, oneOf);
