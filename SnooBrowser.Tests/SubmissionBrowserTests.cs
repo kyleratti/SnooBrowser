@@ -23,24 +23,22 @@ public class SubmissionBrowserTests : BrowserTestsBase
 		var resp = await _submissionBrowser.GetSubmission(LinkThing.CreateFromShortId(shortId));
 		Assert.That(resp.Try(out var data), Is.True);
 
-		var (submission, comments) = data;
-
-		Assert.That(submission.Title, Is.EqualTo(title));
-		Assert.That(submission.Fullname, Is.EqualTo(LinkThing.CreateFromShortId(shortId)));
-		Assert.That(submission.Url, Is.EqualTo(url));
-		Assert.That(submission.AuthorName, Is.EqualTo(Maybe<string>.Create(authorName)));
-		Assert.That(submission.CommentCount, Is.GreaterThan(0)); // We'll never know the right amount, but at least protect against int default
-		Assert.That(submission.IsArchived, Is.EqualTo(isArchived));
-		Assert.That(submission.IsLocked, Is.EqualTo(isLocked));
-		Assert.That(submission.SelfText.OrValue(""), Is.Not.Empty); // Protect against edits and string default
-		Assert.That(submission.SubredditFullname, Is.EqualTo(SubredditThing.CreateFromFullId(subredditFullname)));
-		Assert.That(submission.Subreddit, Is.EqualTo(subredditName));
-		Assert.That(submission.IsSelfPost, Is.EqualTo(isSelfPost));
-		Assert.That(submission.RedditPostId, Is.EqualTo(shortId));
+		Assert.That(data.Title, Is.EqualTo(title));
+		Assert.That(data.Fullname, Is.EqualTo(LinkThing.CreateFromShortId(shortId)));
+		Assert.That(data.FullUrl, Is.EqualTo(url));
+		Assert.That(data.AuthorName, Is.EqualTo(Maybe<string>.Create(authorName)));
+		Assert.That(data.TotalCommentCount, Is.GreaterThan(0)); // We'll never know the right amount, but at least protect against int default
+		Assert.That(data.IsArchived, Is.EqualTo(isArchived));
+		Assert.That(data.IsLocked, Is.EqualTo(isLocked));
+		Assert.That(data.SelfText.OrValue(""), Is.Not.Empty); // Protect against edits and string default
+		Assert.That(data.SubredditFullname, Is.EqualTo(SubredditThing.CreateFromFullId(subredditFullname)));
+		Assert.That(data.Subreddit, Is.EqualTo(subredditName));
+		Assert.That(data.IsSelfPost, Is.EqualTo(isSelfPost));
+		Assert.That(data.RedditPostId, Is.EqualTo(shortId));
 		
-		Assert.That(comments, Is.Not.Empty);
+		Assert.That(data.Comments, Is.Not.Empty);
 
-		var firstComment = comments[0];
+		var firstComment = data.Comments[0];
 		Assert.That(firstComment.IsArchived, Is.EqualTo(isArchived));
 		Assert.That(firstComment.IsEdited, Is.False);
 		Assert.That(firstComment.BodyAsMarkdown, Is.Not.Empty);
