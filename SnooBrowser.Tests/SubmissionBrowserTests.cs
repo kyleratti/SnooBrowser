@@ -43,6 +43,13 @@ public class SubmissionBrowserTests : BrowserTestsBase
 		Assert.That(firstComment.IsEdited, Is.False);
 		Assert.That(firstComment.BodyAsMarkdown, Is.Not.Empty);
 		Assert.That(firstComment.DistinguishType, Is.AnyOf(DistinguishType.None, DistinguishType.Moderator));
+	}
 
+	[Test]
+	public async Task TestInvalidLinkIdIsHandled()
+	{
+		var result = await _submissionBrowser.GetSubmission(LinkThing.CreateFromShortId(@"123"));
+
+		Assert.That(result.HasValue, Is.False);
 	}
 }

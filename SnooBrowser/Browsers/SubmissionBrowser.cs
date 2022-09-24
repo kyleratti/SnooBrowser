@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using FruityFoundation.Base.Structures;
 using Newtonsoft.Json;
@@ -28,7 +29,15 @@ public class SubmissionBrowser
 			UrlHelper.BuildOAuthUrl($"/comments/{thing.ShortId}/")));
 
 		if (result is ErrorResponseType e)
+		{
+			if (e.Response.StatusCode is HttpStatusCode.NotFound && 
+				JsonConvert.DeserializeObject<SubmissionNotFound>(e.RawBody) is { StatusCode: HttpStatusCode.NotFound })
+			{
+				return Maybe<Submission>.Empty();
+			}
+
 			throw new ApplicationException(e.RawBody);
+		}
 
 		if (result is not SuccessResponseType<IReadOnlyList<Listing<JObject>>> rawData)
 			throw new NotImplementedException($"Unhandled result type: {result.GetType().FullName}");
