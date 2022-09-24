@@ -60,6 +60,14 @@ public class CommentBrowser
 		return ParseSingleCommentOrFail(data);
 	}
 
+	public async Task DeleteComment(CommentThing comment)
+	{
+		await _snooBrowserHttpClient.Post(UrlHelper.BuildOAuthUrl("api/del"), MessageBodyType.FormUrlEncoded, new
+		{
+			id = comment.FullId
+		});
+	}
+
 	public async Task<Comment> DistinguishComment(CommentThing comment, DistinguishType distinguishType, bool? isSticky)
 	{
 		var resp = await _snooBrowserHttpClient.TryPost<RawSubmitCommentResponse>(UrlHelper.BuildOAuthUrl("api/distinguish"),

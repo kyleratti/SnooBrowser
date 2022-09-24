@@ -77,4 +77,13 @@ public class CommentBrowserTests : BrowserTestsBase
 		var updatedComment = await _commentBrowser.EditComment(comment.CommentId, newCommentText);
 		Assert.That(updatedComment.BodyAsMarkdown, Is.EqualTo(newCommentText));
 	}
+
+	[Test]
+	public async Task TestDeleteComment()
+	{
+		var comment = await _commentBrowser.SubmitComment(_submissionId, nameof(TestDeleteComment));
+		Assert.That(comment.BodyAsMarkdown, Is.EqualTo(nameof(TestDeleteComment)));
+
+		await _commentBrowser.DeleteComment(comment.CommentId);
+	}
 }
