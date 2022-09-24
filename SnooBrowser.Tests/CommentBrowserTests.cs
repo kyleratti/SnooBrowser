@@ -66,4 +66,15 @@ public class CommentBrowserTests : BrowserTestsBase
 		Assert.That(currentState.DistinguishType, Is.EqualTo(DistinguishType.Moderator));
 		Assert.That(currentState.IsStickied, Is.True);
 	}
+
+	[Test]
+	public async Task TestEditComment()
+	{
+		var comment = await _commentBrowser.SubmitComment(_submissionId, nameof(TestEditComment));
+		Assert.That(comment.BodyAsMarkdown, Is.EqualTo(nameof(TestEditComment)));
+
+		const string newCommentText = "I edited this! Yay!";
+		var updatedComment = await _commentBrowser.EditComment(comment.CommentId, newCommentText);
+		Assert.That(updatedComment.BodyAsMarkdown, Is.EqualTo(newCommentText));
+	}
 }

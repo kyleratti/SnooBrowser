@@ -40,6 +40,26 @@ public class CommentBrowser
 		return ParseSingleCommentOrFail(data);
 	}
 
+	public async Task<Comment> EditComment(CommentThing comment, string markdownText)
+	{
+		var resp = await _snooBrowserHttpClient.TryPost<RawSubmitCommentResponse>(UrlHelper.BuildOAuthUrl("api/editusertext"), MessageBodyType.FormUrlEncoded, new
+		{
+			api_type = "json",
+			return_rtjson = false,
+			text = markdownText,
+			thing_id = comment.FullId
+		});
+
+		var data = resp switch
+		{
+			ErrorResponseType err => throw new Exception(err.RawBody), // FIXME:
+			SuccessResponseType<RawSubmitCommentResponse> success => success.Value,
+			_ => throw new NotImplementedException($"Response type not implemented: {resp.GetType().FullName}")
+		};
+
+		return ParseSingleCommentOrFail(data);
+	}
+
 	public async Task<Comment> DistinguishComment(CommentThing comment, DistinguishType distinguishType, bool? isSticky)
 	{
 		var resp = await _snooBrowserHttpClient.TryPost<RawSubmitCommentResponse>(UrlHelper.BuildOAuthUrl("api/distinguish"),
