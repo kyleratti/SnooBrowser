@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using FruityFoundation.Base.Structures;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SnooBrowser.Models.Comment;

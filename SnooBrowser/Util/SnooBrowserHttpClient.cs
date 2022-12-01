@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -115,7 +115,7 @@ public class SnooBrowserHttpClient
 				},
 				Content = MessageBodyTypeToHttpContent(bodyType, body)
 			};
-			req.Headers.TryAddWithoutValidation("User-Agent", "SnooBrowser by /u/rylekatti (v1.0.0)");
+			req.Headers.TryAddWithoutValidation("User-Agent", $"SnooBrowser by {LibraryMetadataHelper.AuthorRedditUsername} (v{LibraryMetadataHelper.Version.ToString(3)})");
 			var resp = await _httpClient.SendAsync(req);
 
 			if (await IsErrorFromExpiredAccessToken(resp))

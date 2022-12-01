@@ -1,4 +1,5 @@
 ﻿using System;
+using FruityFoundation.Base.Structures;
 using Newtonsoft.Json;
 using SnooBrowser.Models.Subreddit;
 using SnooBrowser.Things;
@@ -47,9 +48,9 @@ public record Comment(
 	public CommentThing CommentId => CommentThing.CreateFromFullId(RawCommentId);
 	public AccountThing AuthorId => AccountThing.CreateFromFullId(RawAuthorId);
 	public SubredditThing SubredditId => SubredditThing.CreateFromFullId(RawSubredditId);
-	public OneOf<LinkThing, CommentThing> ParentId => ThingType.ParseFromStringOrFail(RawParentId).Merge(
-		linkThing: OneOf<LinkThing, CommentThing>.CreateOne,
-		commentThing: OneOf<LinkThing, CommentThing>.CreateTwo,
+	public OneOf<LinkThing, CommentThing> ParentId => ThingType.ParseFromStringOrFail(RawParentId).Merge<OneOf<LinkThing, CommentThing>>(
+		linkThing: linkThing => linkThing,
+		commentThing: commentThing => commentThing,
 		accountThing: _ => throw new ArgumentOutOfRangeException(nameof(RawParentId), RawParentId, "Unsupported type"),
 		subredditThing: _ => throw new ArgumentOutOfRangeException(nameof(RawParentId), RawParentId, "Unsupported type"),
 		awardThing: _ => throw new ArgumentOutOfRangeException(nameof(RawParentId), RawParentId, "Unsupported type"),

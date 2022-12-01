@@ -1,7 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SnooBrowser.Browsers;
+using SnooBrowser.Util;
 
-namespace SnooBrowser.Util;
+namespace SnooBrowser.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {

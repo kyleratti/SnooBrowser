@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -25,8 +25,8 @@ public class SubmissionBrowser
 
 	public async Task<Maybe<Submission>> GetSubmission(LinkThing thing)
 	{
-		var result = (await _snooBrowserHttpClient.TryGet<IReadOnlyList<Listing<JObject>>>(
-			UrlHelper.BuildOAuthUrl($"/comments/{thing.ShortId}/")));
+		var result = await _snooBrowserHttpClient.TryGet<IReadOnlyList<Listing<JObject>>>(
+			UrlHelper.BuildOAuthUrl($"/comments/{thing.ShortId}/"));
 
 		if (result is ErrorResponseType e)
 		{

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SnooBrowser.Extensions.DependencyInjection;
 using SnooBrowser.Util;
 
 namespace SnooBrowser.Tests;
