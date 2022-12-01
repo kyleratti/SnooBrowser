@@ -18,7 +18,7 @@ jobs:
     - name: Build
       run: dotnet build -c Release
     - name: Test
-      run: dotnet test
+      run: dotnet test --no-restore
       env:
         SnooBrowser__Test__RedditAppId: ${{ secrets.SNOOBROWSER__TEST__REDDITAPPID }}
         SnooBrowser__Test__RedditAppSecret: ${{ secrets.SNOOBROWSER__TEST__REDDITAPPSECRET }}
