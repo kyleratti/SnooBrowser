@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -64,7 +64,7 @@ public class SnooBrowserHttpClient
 	private async Task<T?> SendAndParseAsJsonImpl<T>(int triesRemaining, HttpMethod httpMethod, Uri url,
 		HttpAuthenticationType authType, MessageBodyType bodyType, object? body = null)
 	{
-		var resp = await SendImpl(triesRemaining, httpMethod, url, authType, bodyType, body);
+		using var resp = await SendImpl(triesRemaining, httpMethod, url, authType, bodyType, body);
 		var content = await AssertIsSuccessfulResponse(resp);
 
 		return JsonConvert.DeserializeObject<T>(content);
@@ -73,13 +73,13 @@ public class SnooBrowserHttpClient
 	private async Task<HttpResponseType> SendAndTryParseAsJson<T>(int triesRemaining, HttpMethod httpMethod, Uri url,
 		HttpAuthenticationType authType, MessageBodyType bodyType, object? body = null)
 	{
-		var resp = await SendImpl(triesRemaining, httpMethod, url, authType, bodyType, body);
+		using var resp = await SendImpl(triesRemaining, httpMethod, url, authType, bodyType, body);
 		var content = await resp.Content.ReadAsStringAsync();
 
 		if (!resp.IsSuccessStatusCode)
-			return new ErrorResponseType(resp, content);
+			return new ErrorResponseType(resp.StatusCode, content);
 
-		return new SuccessResponseType<T?>(resp, JsonConvert.DeserializeObject<T>(content));
+		return new SuccessResponseType<T?>(JsonConvert.DeserializeObject<T>(content));
 	}
 
 	private async Task<HttpResponseMessage> SendImpl(int triesRemaining, HttpMethod httpMethod, Uri url,

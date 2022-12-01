@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -30,7 +30,7 @@ public class SubmissionBrowser
 
 		if (result is ErrorResponseType e)
 		{
-			if (e.Response.StatusCode is HttpStatusCode.NotFound && 
+			if (e.StatusCode is HttpStatusCode.NotFound && 
 				JsonConvert.DeserializeObject<SubmissionNotFound>(e.RawBody) is { StatusCode: HttpStatusCode.NotFound })
 			{
 				return Maybe<Submission>.Empty();

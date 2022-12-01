@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Net.Http;
+using System.Net;
 
 namespace SnooBrowser.Util;
 
@@ -30,6 +30,6 @@ public abstract record HttpResponseType
 	}
 }
 
-public record SuccessResponseType<T>(HttpResponseMessage Response, T Value) : HttpResponseType;
+public record SuccessResponseType<T>(T Value) : HttpResponseType;
 
-public record ErrorResponseType(HttpResponseMessage Response, string RawBody) : HttpResponseType;
+public record ErrorResponseType(HttpStatusCode StatusCode, string RawBody) : HttpResponseType;
