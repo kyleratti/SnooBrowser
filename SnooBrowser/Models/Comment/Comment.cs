@@ -26,6 +26,7 @@ namespace SnooBrowser.Models.Comment;
 /// <param name="DistinguishType"></param>
 /// <param name="IsArchived"></param>
 /// <param name="IsEdited"></param>
+/// <param name="IsLocked"></param>
 public record Comment(
 	[JsonProperty("name")] string RawCommentId,
 	[JsonProperty("score")] int Score,
@@ -42,7 +43,8 @@ public record Comment(
 	[JsonProperty("subreddit_type")] SubredditType SubredditType,
 	[JsonProperty("distinguished")] DistinguishType DistinguishType,
 	[JsonProperty("archived")] bool IsArchived,
-	[JsonProperty("edited")] bool IsEdited
+	[JsonProperty("edited")] bool IsEdited,
+	[JsonProperty("locked")] bool IsLocked
 )
 {
 	public CommentThing CommentId => CommentThing.CreateFromFullId(RawCommentId);

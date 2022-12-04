@@ -1,4 +1,5 @@
-﻿using SnooBrowser.Browsers;
+﻿using FruityFoundation.Base.Structures;
+using SnooBrowser.Browsers;
 using SnooBrowser.Models.Comment;
 using SnooBrowser.Models.Subreddit;
 using SnooBrowser.Things;
@@ -83,6 +84,48 @@ public class CommentBrowserTests : BrowserTestsBase
 	{
 		var comment = await _commentBrowser.SubmitComment(_submissionId, nameof(TestDeleteComment));
 		Assert.That(comment.BodyAsMarkdown, Is.EqualTo(nameof(TestDeleteComment)));
+
+		await _commentBrowser.DeleteComment(comment.CommentId);
+	}
+
+	[Test]
+	public async Task TestLockComment()
+	{
+		var comment = await _commentBrowser.SubmitComment(_submissionId, nameof(TestLockComment));
+		Assert.That(comment.BodyAsMarkdown, Is.EqualTo(nameof(TestLockComment)));
+
+		await _commentBrowser.LockComment(comment.CommentId);
+
+		var updatedComment = (await _submissionBrowser.GetSubmission(_submissionId)).Value.Comments
+			.FirstOrEmpty(x => x.CommentId.Equals(comment.CommentId));
+
+		Assert.That(updatedComment.HasValue);
+		Assert.That(updatedComment.Value.IsLocked);
+
+		await _commentBrowser.DeleteComment(comment.CommentId);
+	}
+
+	[Test]
+	public async Task TestUnlockComment()
+	{
+		var comment = await _commentBrowser.SubmitComment(_submissionId, nameof(TestUnlockComment));
+		Assert.That(comment.BodyAsMarkdown, Is.EqualTo(nameof(TestUnlockComment)));
+
+		await _commentBrowser.LockComment(comment.CommentId);
+
+		var updatedComment = (await _submissionBrowser.GetSubmission(_submissionId)).Value.Comments
+			.FirstOrEmpty(x => x.CommentId.Equals(comment.CommentId));
+
+		Assert.That(updatedComment.HasValue);
+		Assert.That(updatedComment.Value.IsLocked);
+
+		await _commentBrowser.UnlockComment(comment.CommentId);
+
+		var unlockedComment = (await _submissionBrowser.GetSubmission(_submissionId)).Value.Comments
+			.FirstOrEmpty(x => x.CommentId.Equals(comment.CommentId));
+
+		Assert.That(unlockedComment.HasValue);
+		Assert.That(unlockedComment.Value.IsLocked, Is.False);
 
 		await _commentBrowser.DeleteComment(comment.CommentId);
 	}

@@ -84,6 +84,18 @@ public class CommentBrowser
 			onError: x => throw new Exception(x.RawBody));
 	}
 
+	public async Task LockComment(CommentThing comment)
+	{
+		await _snooBrowserHttpClient.Post(UrlHelper.BuildOAuthUrl("api/lock"),
+			MessageBodyType.FormUrlEncoded, new { id = comment.FullId });
+	}
+
+	public async Task UnlockComment(CommentThing comment)
+	{
+		await _snooBrowserHttpClient.Post(UrlHelper.BuildOAuthUrl("api/unlock"),
+			MessageBodyType.FormUrlEncoded, new { id = comment.FullId });
+	}
+
 	private static Comment ParseSingleCommentOrFail(RawSubmitCommentResponse input)
 	{
 		if (input.Json.Errors.Any())
