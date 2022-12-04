@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="3.1.0"></a>
+## [3.1.0](https://www.github.com/kyleratti/SnooBrowser/releases/tag/v3.1.0) (2022-12-4)
+
+### Features
+
+* lock and unlock comments ([b9b800d](https://www.github.com/kyleratti/SnooBrowser/commit/b9b800dd5471ff1167c59332ce1c221c1b2c39fc))
+
 <a name="3.0.4"></a>
 ## [3.0.4](https://www.github.com/kyleratti/SnooBrowser/releases/tag/v3.0.4) (2022-12-1)
 

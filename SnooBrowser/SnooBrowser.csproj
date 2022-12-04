@@ -7,7 +7,7 @@
     <Authors>Kyle Ratti</Authors>
     <PackageProjectUrl>https://github.com/kyleratti/SnooBrowser</PackageProjectUrl>
     <RepositoryUrl>https://github.com/kyleratti/SnooBrowser</RepositoryUrl>
-    <Version>3.0.4</Version>
+    <Version>3.1.0</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
