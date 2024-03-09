@@ -21,7 +21,7 @@ jobs:
           fetch-depth: '0' # Load entire history
       - uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '6.x'
+          dotnet-version: '8.x'
       - run: dotnet tool restore
       - name: Generate Version
         id: generate-version
