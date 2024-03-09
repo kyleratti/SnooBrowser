@@ -33,7 +33,7 @@ public class SubmissionBrowser
 			if (e.StatusCode is HttpStatusCode.NotFound && 
 				JsonConvert.DeserializeObject<SubmissionNotFound>(e.RawBody) is { StatusCode: HttpStatusCode.NotFound })
 			{
-				return Maybe<Submission>.Empty();
+				return Maybe.Empty<Submission>();
 			}
 
 			throw new ApplicationException(e.RawBody);
@@ -56,7 +56,7 @@ public class SubmissionBrowser
 
 		return new Submission(
 			deserializedSubmission.Subreddit,
-			SelfText: Maybe<string>.Create(deserializedSubmission.SelfText!, hasValue: deserializedSubmission.IsSelfPost),
+			SelfText: Maybe.Just(deserializedSubmission.SelfText!, hasValue: _ => deserializedSubmission.IsSelfPost),
 			deserializedSubmission.Title,
 			deserializedSubmission.SubmissionFullname,
 			deserializedSubmission.IsSelfPost,
@@ -64,7 +64,7 @@ public class SubmissionBrowser
 			deserializedSubmission.IsLocked,
 			deserializedSubmission.SubredditFullname,
 			deserializedSubmission.RedditPostId,
-			AuthorName: Maybe<string>.Create(deserializedSubmission.AuthorName!, hasValue: !string.IsNullOrEmpty(deserializedSubmission.AuthorName)),
+			AuthorName: Maybe.Just(deserializedSubmission.AuthorName!, hasValue: _ => !string.IsNullOrEmpty(deserializedSubmission.AuthorName)),
 			deserializedSubmission.CommentCount,
 			deserializedSubmission.Permalink,
 			deserializedSubmission.Url,

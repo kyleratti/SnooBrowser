@@ -83,8 +83,7 @@ public record ModQueueEntryData
 
 	[Obsolete("Obsolete")]
 	public Maybe<Fullname> Parent =>
-		Maybe<string>
-			.Create(ParentAsString, string.IsNullOrEmpty)
+		Maybe.Just(ParentAsString, string.IsNullOrEmpty)
 			.Map(Fullname.FromString);
 
 	[JsonProperty("score")] public int Karma { get; init; }
@@ -128,8 +127,7 @@ public record ModQueueEntryData
 	/// </summary>
 	[Obsolete("Obsolete")]
 	public Maybe<Fullname> LinkId =>
-		Maybe<string>
-			.Create(LinkIdAsString, string.IsNullOrEmpty)
+		Maybe.Just(LinkIdAsString, string.IsNullOrEmpty)
 			.Map(Fullname.FromString);
 
 	[JsonProperty("approved")] public bool IsApproved { get; init; }
