@@ -26,7 +26,7 @@ public class SubmissionBrowserTests : BrowserTestsBase
 		Assert.That(data.Title, Is.EqualTo(title));
 		Assert.That(data.Fullname, Is.EqualTo(LinkThing.CreateFromShortId(shortId)));
 		Assert.That(data.FullUrl, Is.EqualTo(url));
-		Assert.That(data.AuthorName, Is.EqualTo(Maybe.Just(authorName)));
+		Assert.That(data.AuthorName, Is.EqualTo(Maybe.Create(authorName)));
 		Assert.That(data.TotalCommentCount, Is.GreaterThan(0)); // We'll never know the right amount, but at least protect against int default
 		Assert.That(data.IsArchived, Is.EqualTo(isArchived));
 		Assert.That(data.IsLocked, Is.EqualTo(isLocked));

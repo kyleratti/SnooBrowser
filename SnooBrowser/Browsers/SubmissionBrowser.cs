@@ -56,7 +56,7 @@ public class SubmissionBrowser
 
 		return new Submission(
 			deserializedSubmission.Subreddit,
-			SelfText: Maybe.Just(deserializedSubmission.SelfText!, hasValue: _ => deserializedSubmission.IsSelfPost),
+			SelfText: Maybe.Create(deserializedSubmission.SelfText!, evalIsEmpty: () => !deserializedSubmission.IsSelfPost),
 			deserializedSubmission.Title,
 			deserializedSubmission.SubmissionFullname,
 			deserializedSubmission.IsSelfPost,
@@ -64,7 +64,7 @@ public class SubmissionBrowser
 			deserializedSubmission.IsLocked,
 			deserializedSubmission.SubredditFullname,
 			deserializedSubmission.RedditPostId,
-			AuthorName: Maybe.Just(deserializedSubmission.AuthorName!, hasValue: _ => !string.IsNullOrEmpty(deserializedSubmission.AuthorName)),
+			AuthorName: Maybe.Create(deserializedSubmission.AuthorName!, evalIsEmpty: () => string.IsNullOrEmpty(deserializedSubmission.AuthorName)),
 			deserializedSubmission.CommentCount,
 			deserializedSubmission.Permalink,
 			deserializedSubmission.Url,

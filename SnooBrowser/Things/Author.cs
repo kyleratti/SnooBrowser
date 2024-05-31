@@ -21,7 +21,7 @@ namespace SnooBrowser.Things
         public bool IsDeleted;
 
         public Maybe<long> UserId =>
-            Maybe.Just(Convert.ToInt64(IdAsString), _ => !IsDeleted);
+            Maybe.Create(Convert.ToInt64(IdAsString), evalIsEmpty: () => IsDeleted);
 
         public static Author Create(long id, string name, bool isMod) =>
             new()
