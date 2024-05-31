@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="3.1.2"></a>
+## [3.1.2](https://www.github.com/kyleratti/SnooBrowser/releases/tag/v3.1.2) (2024-5-31)
+
 <a name="3.1.1"></a>
 ## [3.1.1](https://www.github.com/kyleratti/SnooBrowser/releases/tag/v3.1.1) (2024-3-9)
 
