@@ -38,7 +38,7 @@ public class CommentBrowser
 			_ => throw new NotImplementedException($"Response type not implemented: {resp.GetType().FullName}")
 		};
 
-		return ParseSingleCommentOrFail(data);
+		return ParseSingleCommentOrFail(parent, data);
 	}
 
 	public async Task<Comment> EditComment(CommentThing comment, string markdownText)
@@ -58,7 +58,7 @@ public class CommentBrowser
 			_ => throw new NotImplementedException($"Response type not implemented: {resp.GetType().FullName}")
 		};
 
-		return ParseSingleCommentOrFail(data);
+		return ParseSingleCommentOrFail(comment, data);
 	}
 
 	public async Task DeleteComment(CommentThing comment)
@@ -80,8 +80,9 @@ public class CommentBrowser
 				sticky = isSticky
 			});
 
-		return resp.Merge<RawSubmitCommentResponse, Comment>(onSuccess: x => ParseSingleCommentOrFail(x.Value),
-			onError: x => throw new Exception(x.RawBody));
+		return resp.Merge<RawSubmitCommentResponse, Comment>(
+			onSuccess: x => ParseSingleCommentOrFail(comment, x.Value),
+			onError: x => throw new ApplicationException(x.RawBody));
 	}
 
 	public async Task LockComment(CommentThing comment)
@@ -96,17 +97,21 @@ public class CommentBrowser
 			MessageBodyType.FormUrlEncoded, new { id = comment.FullId });
 	}
 
-	private static Comment ParseSingleCommentOrFail(RawSubmitCommentResponse input)
+	private static Comment ParseSingleCommentOrFail(OneOf<CommentThing, LinkThing> parent, RawSubmitCommentResponse input)
 	{
+		var (thingType, parentThingId) = parent.Map(
+			commentThing => ("comment", commentThing.FullId),
+			linkThing => ("link", linkThing.FullId));
+
 		if (input.Json.Errors.Any())
-			throw new Exception($"Error submitting comment: {JsonConvert.SerializeObject(input.Json.Errors)}");
+			throw new Exception($"Error submitting comment (ThingType={thingType}, ThingId={parentThingId}, Errors={JsonConvert.SerializeObject(input.Json.Errors)})");
 
 		if (!input.Json.Data.TryGetValue("things", out var things))
-			throw new Exception($"Expected new comment data in response but no data was found: {JsonConvert.SerializeObject(input)}");
+			throw new Exception($"Expected new comment data in response but no data was found (ThingType={thingType}, ThingId={parentThingId}, Input={JsonConvert.SerializeObject(input)})");
 
 		var childCount = things.Children().Count();
 		if (childCount != 1)
-			throw new ArgumentOutOfRangeException(nameof(childCount), childCount, "Expected to receive back 1 comment");
+			throw new ApplicationException($"Expected to receive back 1 comment, but received {childCount} comments");
 
 		var firstThing = things.First().ToObject<JObject>()!;
 		if (!firstThing.TryGetValue("kind", out var kind) && kind!.ToObject<string>() != "t1")
