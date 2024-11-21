@@ -15,6 +15,12 @@ public record GetAboutSubredditResponseData
 	public string Id { get; init; } = null!;
 	[JsonProperty("created_utc")] public long CreatedAtUtc { get; init; }
 
+	/// <summary>
+	/// Whether the user is a moderator on the subreddit.
+	/// </summary>
+	[JsonProperty("user_is_moderator")]
+	public bool IsUserModerator { get; init; }
+
 	[Obsolete("Obsolete")]
 	public Fullname Fullname =>
 		Fullname.NewSubreddit(Id);
