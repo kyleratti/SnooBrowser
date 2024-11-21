@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="3.2.0"></a>
+## [3.2.0](https://www.github.com/kyleratti/SnooBrowser/releases/tag/v3.2.0) (2024-11-21)
+
+### Features
+
+* include whether user is mod of subreddit ([0777077](https://www.github.com/kyleratti/SnooBrowser/commit/0777077592f26c3fa1fb8159a1294e4b96fdf281))
+
 <a name="3.1.3"></a>
 ## [3.1.3](https://www.github.com/kyleratti/SnooBrowser/releases/tag/v3.1.3) (2024-11-13)
 
